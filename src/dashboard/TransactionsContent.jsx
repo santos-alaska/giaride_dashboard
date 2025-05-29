@@ -82,7 +82,7 @@ const TransactionsContent = () => {
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
         {/* Top Bar: Filter */}
         <div className="flex justify-between items-center mb-4 sm:mb-6">
-          <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 w-full max-w-[30%]">
+          <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 w-full md:max-w-[30%]">
             <TbFilter size={20} className="text-gray-500 mr-2" />
             <input
               type="text"

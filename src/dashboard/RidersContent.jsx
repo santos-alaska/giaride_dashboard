@@ -3,11 +3,10 @@ import React, { useState, useEffect, useRef } from 'react'; // Added useEffect, 
 import { TbFilter } from 'react-icons/tb';
 import { IoMdAdd } from 'react-icons/io';
 import { BsThreeDotsVertical, BsCheckCircleFill } from 'react-icons/bs'; // Added for stepper in modal
-import { FiChevronDown, FiMail, FiPhone, FiUser, FiTruck, FiClock, FiFileText, FiRepeat, FiMapPin, FiChevronUp } from 'react-icons/fi'; // Icons for modal
-import { FaCarSide, FaShippingFast, FaBusAlt } from 'react-icons/fa'; // Icons for modal service types
+
 
 // Import the modal (assuming it's in the same directory or adjust path)
-import AddDriverModal from './AddDriverModal'; 
+import AddDriverModal from './AddDriverModal';
 
 // Helper component for the "Today" tag
 const TodayTag = () => (
@@ -16,7 +15,6 @@ const TodayTag = () => (
     </span>
 );
 
-// Sample data for the Riders table (adjust fields for riders)
 const ridersTableData = [
     // This data should represent RIDERS, not drivers.
     // The AddDriverModal is designed for drivers. If this page is for RIDERS,
@@ -29,17 +27,62 @@ const ridersTableData = [
 ];
 
 
+
+
 const RidersContent = () => {
     const [activeTab, setActiveTab] = useState('All riders');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [ridersData, setRidersData] = useState(ridersTableData); // Manage table data with state
+    const [ridersData, setRidersData] = useState(ridersTableData);
 
-    // IMPORTANT: The AddDriverModal is designed for adding DRIVERS.
-    // If this page is for RIDERS, you would typically have an AddRiderModal
-    // with fields relevant to riders. For this example, we'll use AddDriverModal
-    // and pass "Rider" as entityType, but the internal fields of the modal
-    // are driver-centric from its previous design.
-    const entityTypeForModal = "Rider"; 
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [ridersStats, setRidersStats] = useState(null);
+
+    const BASE_URL = import.meta.env.VITE_REACT_ENDPOINT;
+
+
+    useEffect(() => {
+        const endpoint = (`${BASE_URL}/admin/drivers`);
+        fetch(endpoint)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((jsonData) => {
+                setData(jsonData);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                console.error("Fetch error:", err);
+                setError(err.message || "Unknown error");
+                setIsLoading(false);
+            });
+    }, []);
+
+    useEffect(() => {
+        const endpoint = (`${BASE_URL}/admin/riders-stats`);
+        fetch(endpoint)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((jsonData) => {
+                setRidersStats(jsonData);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                console.error("Fetch error:", err);
+                setError(err.message || "Unknown error");
+                setIsLoading(false);
+            });
+    }, []);
+
+    const entityTypeForModal = "Rider";
     const tabs = [`All ${entityTypeForModal.toLowerCase()}s`, 'Pending'];
 
     const handleAddRiderSubmit = (formDataFromModal) => {
@@ -55,7 +98,7 @@ const RidersContent = () => {
             status: 'pending', // New riders might be pending
             statusColor: 'bg-yellow-500',
             gender: formDataFromModal.gender.charAt(0).toUpperCase() + formDataFromModal.gender.slice(1),
-            joinDate: new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}).replace(/\//g, '-'),
+            joinDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
             totalRides: '0',
             location: formDataFromModal.address.split(',').pop().trim() || 'N/A', // Attempt to get city
         };
@@ -80,7 +123,7 @@ const RidersContent = () => {
                             <TodayTag />
                         </div>
                         <div>
-                            <p className="text-3xl sm:text-[28px] font-bold">12,000</p> {/* Example data */}
+                            <p className="text-3xl sm:text-[28px] font-bold">{ridersStats?.data?.total || "--"}</p> 
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
@@ -89,7 +132,7 @@ const RidersContent = () => {
                             <TodayTag />
                         </div>
                         <div>
-                            <p className="text-3xl sm:text-[28px] font-bold">8,000</p> {/* Example data */}
+                            <p className="text-3xl sm:text-[28px] font-bold">{ridersStats?.data?.active || "--"}</p> 
                         </div>
                     </div>
                 </div>
@@ -107,7 +150,7 @@ const RidersContent = () => {
                             className="text-sm placeholder-gray-400 outline-none flex-grow bg-transparent"
                         />
                     </div>
-                    <button 
+                    <button
                         onClick={() => setIsModalOpen(true)}
                         className="bg-yellow-400 hover:bg-yellow-500 text-neutral-900 font-semibold px-[24px] py-[8px] rounded-full flex items-center justify-center w-full sm:w-auto transition-colors cursor-pointer"
                     >
@@ -188,11 +231,11 @@ const RidersContent = () => {
             </div>
 
             {/* AddDriverModal is used here, passing "Rider" as entityType */}
-            <AddDriverModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+            <AddDriverModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 onSubmitBooking={handleAddRiderSubmit} // Changed prop name for clarity if modal submits booking-like data
-                entityType={entityTypeForModal} 
+                entityType={entityTypeForModal}
             />
         </div>
     );

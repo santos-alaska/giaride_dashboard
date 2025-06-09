@@ -43,7 +43,7 @@ const RidersContent = () => {
 
 
     useEffect(() => {
-        const endpoint = (`${BASE_URL}/admin/drivers`);
+        const endpoint = (`${BASE_URL}/admin/riders`);
         fetch(endpoint)
             .then((response) => {
                 if (!response.ok) {
@@ -61,6 +61,8 @@ const RidersContent = () => {
                 setIsLoading(false);
             });
     }, []);
+
+    console.log("RidersContent data:", data);
 
     useEffect(() => {
         const endpoint = (`${BASE_URL}/admin/riders-stats`);
@@ -107,6 +109,7 @@ const RidersContent = () => {
         // Optionally show a success message/modal here
     };
 
+    console.log(data)
 
     return (
         <div className="text-gray-800 relative">
@@ -123,7 +126,7 @@ const RidersContent = () => {
                             <TodayTag />
                         </div>
                         <div>
-                            <p className="text-3xl sm:text-[28px] font-bold">{ridersStats?.data?.total || "--"}</p> 
+                            <p className="text-3xl sm:text-[28px] font-bold">{ridersStats?.data?.total || "--"}</p>
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
@@ -132,7 +135,7 @@ const RidersContent = () => {
                             <TodayTag />
                         </div>
                         <div>
-                            <p className="text-3xl sm:text-[28px] font-bold">{ridersStats?.data?.active || "--"}</p> 
+                            <p className="text-3xl sm:text-[28px] font-bold">{ridersStats?.data?.active || "--"}</p>
                         </div>
                     </div>
                 </div>
@@ -159,7 +162,7 @@ const RidersContent = () => {
                     </button>
                 </div>
 
-                <div className="mb-4 border-b border-gray-200">
+                <div className=" border-b border-gray-200">
                     <nav className="flex space-x-6 -mb-px" aria-label="Tabs">
                         {tabs.map((tab) => (
                             <button
@@ -181,7 +184,7 @@ const RidersContent = () => {
                     <table className="w-full min-w-[900px] text-sm text-left text-gray-600">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             {/* Adjust table headers for Riders */}
-                            <tr>
+                            {/* <tr>
                                 <th scope="col" className="px-4 py-3">No.</th>
                                 <th scope="col" className="px-4 py-3">Rider ID</th>
                                 <th scope="col" className="px-4 py-3">{entityTypeForModal} Name</th>
@@ -191,9 +194,57 @@ const RidersContent = () => {
                                 <th scope="col" className="px-4 py-3">Location</th>
                                 <th scope="col" className="px-4 py-3">Total Rides</th>
                                 <th scope="col" className="px-4 py-3 text-center">Action</th>
+                            </tr> */}
+                            <tr>
+                                <th scope="col" className="px-4 py-3 font-medium">No.</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Ride no.</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Rider Name</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Status</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Gender</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Type</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Location</th>
+                                <th scope="col" className="px-4 py-3 font-medium">Expenditures</th>
+                                <th scope="col" className="px-4 py-3 font-medium text-center"></th> {/* Action header */}
                             </tr>
                         </thead>
-                        <tbody>
+                        {data?.data?.data?.length > 0 ? (
+                            <tbody>
+                                {data?.data?.data?.map((driver, index) => (
+                                    <tr key={driver.id} className="bg-white border-b border-gray-100 hover:bg-gray-50">
+                                        <td className="px-4 py-2">{index + 1}</td>
+                                        <td className="px-4 py-2">{driver.car_number_plate || 'N/A'}</td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex items-center">
+
+                                                <img className="w-7 h-7 rounded-full mr-2.5 object-cover" src={driver?.photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7csvPWMdfAHEAnhIRTdJKCK5SPK4cHfskow&s"} alt={driver.first_name} />
+
+                                                {driver.first_name || driver.last_name
+                                                    ? `${driver.first_name || ''} ${driver.last_name || ''}`
+                                                    : driver.username || 'N/A'}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-2 capitalize">{driver.status}</td>
+                                        <td className="px-4 py-2 capitalize">{driver.gender || 'N/A'}</td>
+                                        <td className="px-4 py-2">
+                                            {driver.premium_class || "--"}
+                                        </td>
+                                        <td className="px-4 py-2">{driver.city || 'N/A'}</td>
+                                        <td className="px-4 py-2">₦ {driver.total_debit || 0}</td>
+                                        <td className="px-4 py-2 text-center">
+                                            <button className="text-gray-400 hover:text-gray-600">
+                                                <BsThreeDotsVertical size={16} />
+                                            </button>                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="9" className="text-center py-4 text-gray-500">No drivers found</td>
+                                </tr>
+                            </tbody>
+                        )}
+                        {/* <tbody>
                             {ridersData.map((item) => (
                                 <tr key={item.id} className="bg-white border-b border-gray-200 hover:bg-gray-50">
                                     <td className="px-4 py-3 text-gray-900">{item.no}</td>
@@ -225,7 +276,7 @@ const RidersContent = () => {
                                     </td>
                                 </tr>
                             ))}
-                        </tbody>
+                        </tbody> */}
                     </table>
                 </div>
             </div>

@@ -68,7 +68,7 @@ const DriversContent = () => {
     }, []);
 
 
-
+    // console.log("Data:", data);
 
 
     const entityTypeForModal = "Driver";
@@ -122,7 +122,7 @@ const DriversContent = () => {
                     </button>
                 </div>
 
-                <div className="mb-4 border-b border-gray-200">
+                <div className=" border-b border-gray-200">
                     <nav className="flex space-x-6 -mb-px" aria-label="Tabs">
                         {tabs.map((tab) => (
                             <button
@@ -143,7 +143,7 @@ const DriversContent = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[900px] text-sm text-left text-gray-600">
                         {/* UPDATED THEAD TO MATCH IMAGE */}
-                        <thead className="text-xs text-gray-500 uppercase bg-transparent"> {/* Removed bg-gray-50 to match image */}
+                        <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" className="px-4 py-3 font-medium">No.</th>
                                 <th scope="col" className="px-4 py-3 font-medium">Car no.</th>
@@ -153,31 +153,37 @@ const DriversContent = () => {
                                 <th scope="col" className="px-4 py-3 font-medium">Type</th>
                                 <th scope="col" className="px-4 py-3 font-medium">Location</th>
                                 <th scope="col" className="px-4 py-3 font-medium">Earning</th>
-                                <th scope="col" className="px-4 py-3 font-medium text-center">...</th> {/* Action header */}
+                                <th scope="col" className="px-4 py-3 font-medium text-center"></th>
                             </tr>
                         </thead>
                         {data?.data?.data?.length > 0 ? (
                             <tbody>
                                 {data?.data?.data?.map((driver, index) => (
-                                    <tr key={driver.id}>
+                                    <tr key={driver.id} className="bg-white border-b border-gray-100 hover:bg-gray-50">
                                         <td className="px-4 py-2">{index + 1}</td>
                                         <td className="px-4 py-2">{driver.car_number_plate || 'N/A'}</td>
                                         <td className="px-4 py-2">
-                                            {driver.first_name || driver.last_name
-                                                ? `${driver.first_name || ''} ${driver.last_name || ''}`
-                                                : driver.username || 'N/A'}
+                                            <div className="flex items-center">
+
+                                                <img className="w-7 h-7 rounded-full mr-2.5 object-cover" src={driver?.photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7csvPWMdfAHEAnhIRTdJKCK5SPK4cHfskow&s"} alt={driver.first_name} />
+
+                                                {driver.first_name || driver.last_name
+                                                    ? `${driver.first_name || ''} ${driver.last_name || ''}`
+                                                    : driver.username || 'N/A'}
+                                            </div>
                                         </td>
                                         <td className="px-4 py-2 capitalize">{driver.status}</td>
                                         <td className="px-4 py-2 capitalize">{driver.gender || 'N/A'}</td>
                                         <td className="px-4 py-2">
-                                            {driver.premium_class ? 'Premium' : 'Standard'}
+                                            {driver.premium_class || "--"}
                                         </td>
                                         <td className="px-4 py-2">{driver.city || 'N/A'}</td>
                                         <td className="px-4 py-2">₦{driver.total_credits || 0}</td>
                                         <td className="px-4 py-2 text-center">
                                             <button className="text-gray-400 hover:text-gray-600">
                                                 <BsThreeDotsVertical size={16} />
-                                            </button>                                        </td>
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
